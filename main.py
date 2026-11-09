@@ -13,9 +13,7 @@ def Get_IP(URL):
     ip = socket.gethostbyname(hostname)
     return ip
 
-def main(URL):    
-    print("Running...")
-
+def Port_Analyzer():
     port_range = "1-65535"
 
     start_time = time.perf_counter()
@@ -29,6 +27,11 @@ def main(URL):
 
     for analysis in port_analysis:
         print(analysis)
+
+
+def main(URL):    
+    print("Running...")
+    Port_Analyzer()
 
 
 
