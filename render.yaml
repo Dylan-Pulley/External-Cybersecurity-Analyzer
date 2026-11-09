@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: eca
+    runtime: python
+    repo: https://github.com/Dylan-Pulley/External-Cybersecurity-Analyzer
+    branch: main
+    rootDir: eca
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2 --access-logfile -
+    healthCheckPath: /api/health
+    plan: free
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.12
