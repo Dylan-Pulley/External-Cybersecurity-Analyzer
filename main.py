@@ -2,8 +2,8 @@ import socket
 from urllib.parse import urlsplit
 
 #Scripts
-import port_getter
-import port_analyzer
+import port.port_getter as port_getter
+import port.port_analyzer as port_analyzer
 
 #Test
 import time

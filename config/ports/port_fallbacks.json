@@ -1,0 +1,8 @@
+{
+  "empty_service": {
+    "status": "informational",
+    "severity": "unknown",
+    "description": "The service field is empty. An open port alone does not confirm a vulnerability, but the unidentified service should be reviewed.",
+    "recommendation": "Identify the listening application and review any product or version details. Confirm the service is expected and access is limited to intended clients. Disable it if unnecessary."
+  }
+}
