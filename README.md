@@ -6,15 +6,16 @@ Given a domain you own or are authorized to test, the analyzer discovers what is
 
 ## Web interface
 
-I added the first homepage in `App.tsx`. Enter a website URL and click
-**Submit**. Flask sends the URL back so you can see that the form works.
+- `web/App.tsx` is the page you see in the browser.
+- `app.py` starts Flask and gets the URL from the form.
+- `main.py` runs Dylan's analyzer from the terminal.
 
-Open a terminal in this repo with Node.js and Python installed. Build the
-React page first. Vite writes the files Flask serves to `dist/`.
+You’ll need Node.js and Python. From the repo folder, install the React
+packages and build the page.
 
 ```bash
-npm ci
-npm run build
+npm --prefix web ci
+npm --prefix web run build
 ```
 
 Then start Flask using the commands for your system.
@@ -36,7 +37,7 @@ py -m venv .venv
 .\.venv\Scripts\python.exe -m flask --app app run --port 8000
 ```
 
-Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) to see the page.
-Enter a full URL such as `https://example.com` and click **Submit**. The page
-shows the URL Flask received. Run `npm run build` again after changing `App.tsx`.
-Press Ctrl+C in the terminal to stop the server.
+Open [localhost:8000](http://127.0.0.1:8000/), enter `https://example.com`, and
+click **Submit**. Flask sends the URL back so you can check that the form works.
+Run `npm --prefix web run build` again after editing the page. Press Ctrl+C
+to stop Flask.
