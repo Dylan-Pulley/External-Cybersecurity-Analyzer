@@ -6,8 +6,8 @@ Given a domain you own or are authorized to test, the analyzer discovers what is
 
 ## Web interface
 
-`App.tsx` contains the React page and URL form. Flask serves the built page
-and returns the submitted URL so you can see that the form reaches the server.
+I added the first homepage in `App.tsx`. Enter a website URL and click
+**Submit**. Flask sends the URL back so you can see that the form works.
 
 Open a terminal in this repo with Node.js and Python installed. Build the
 React page first. Vite writes the files Flask serves to `dist/`.

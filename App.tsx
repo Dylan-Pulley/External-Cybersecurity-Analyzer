@@ -2,35 +2,36 @@ import { useState, type FormEvent } from "react";
 import { createRoot } from "react-dom/client";
 
 function App() {
-    const [website, setWebsite] = useState("");
-    const [message, setMessage] = useState("");
-    const [submitting, setSubmitting] = useState(false);
+    const [websiteUrl, setWebsiteUrl] = useState("");
+    const [formMessage, setFormMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     async function submitWebsite(event: FormEvent<HTMLFormElement>) {
+        // Keep the page open while we send the URL to Flask.
         event.preventDefault();
-        setSubmitting(true);
-        setMessage("");
+        setIsSubmitting(true);
+        setFormMessage("");
 
         try {
             const response = await fetch("/api/website", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ website }),
+                body: JSON.stringify({ website: websiteUrl }),
             });
             if (response.status === 400) {
-                setMessage("Enter a website URL.");
+                setFormMessage("Enter a website URL.");
                 return;
             }
             if (!response.ok) {
                 throw new Error("Flask could not accept the URL.");
             }
 
-            const result: { website: string } = await response.json();
-            setMessage(`Submitted URL: ${result.website}`);
+            const reply: { website: string } = await response.json();
+            setFormMessage(`Submitted URL: ${reply.website}`);
         } catch {
-            setMessage("Could not submit the URL. Please try again.");
+            setFormMessage("Could not submit the URL. Please try again.");
         } finally {
-            setSubmitting(false);
+            setIsSubmitting(false);
         }
     }
 
@@ -44,17 +45,18 @@ function App() {
                     name="website"
                     type="url"
                     placeholder="https://example.com"
-                    value={website}
-                    onChange={(event) => setWebsite(event.target.value)}
+                    value={websiteUrl}
+                    onChange={(event) => setWebsiteUrl(event.target.value)}
                     required
                 />{" "}
-                <button disabled={submitting}>
-                    {submitting ? "Submitting…" : "Submit"}
+                <button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "Submitting…" : "Submit"}
                 </button>
             </form>
-            <p role="status">{message}</p>
+            <p role="status">{formMessage}</p>
         </main>
     );
 }
 
+// Put the React page inside the root element in index.html.
 createRoot(document.getElementById("root")!).render(<App />);
