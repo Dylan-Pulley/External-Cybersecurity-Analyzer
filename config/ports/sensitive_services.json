@@ -1,4 +1,3 @@
-
 {
   "msrpc": {
     "severity": "medium",
@@ -19,5 +18,110 @@
     "severity": "high",
     "description": "FTP may transmit credentials in plaintext.",
     "recommendation": "Use SFTP or FTPS."
+  },
+  "ssh": {
+    "severity": "medium",
+    "description": "SSH remote administration is reachable and should be reviewed for unintended public access.",
+    "recommendation": "Restrict access to approved administrators and trusted networks; use key authentication and keep the service updated."
+  },
+  "smtp": {
+    "severity": "medium",
+    "description": "SMTP is reachable; mail relay permissions and transport encryption require review.",
+    "recommendation": "Verify relay restrictions and authentication, enable TLS, and keep mail server software updated."
+  },
+  "http": {
+    "severity": "medium",
+    "description": "HTTP may carry unencrypted traffic or expose administrative interfaces, development pages, software versions, or configuration details.",
+    "recommendation": "Redirect sensitive traffic to HTTPS; restrict management interfaces, review response headers and banners, and update vulnerable software."
+  },
+  "netbios-ssn": {
+    "severity": "high",
+    "description": "NetBIOS session and Windows file sharing services are reachable.",
+    "recommendation": "Block public file sharing access and restrict access to trusted networks and authorized users."
+  },
+  "ms-wbt-server": {
+    "severity": "high",
+    "description": "Remote Desktop administration is reachable and may be exposed to untrusted clients.",
+    "recommendation": "Restrict RDP through a VPN or trusted gateway, require strong authentication, and keep the service updated."
+  },
+  "rdp": {
+    "severity": "high",
+    "description": "Remote Desktop administration is reachable and may be exposed to untrusted clients.",
+    "recommendation": "Restrict RDP through a VPN or trusted gateway, require strong authentication, and keep the service updated."
+  },
+  "mysql": {
+    "severity": "high",
+    "description": "MySQL database or data store is reachable and may be unintentionally exposed.",
+    "recommendation": "Restrict access to approved application hosts and trusted networks, require authentication, enable encryption where supported, and update vulnerable versions."
+  },
+  "postgresql": {
+    "severity": "high",
+    "description": "PostgreSQL database or data store is reachable and may be unintentionally exposed.",
+    "recommendation": "Restrict access to approved application hosts and trusted networks, require authentication, enable encryption where supported, and update vulnerable versions."
+  },
+  "redis": {
+    "severity": "high",
+    "description": "Redis database or data store is reachable and may be unintentionally exposed.",
+    "recommendation": "Restrict access to approved application hosts and trusted networks, require authentication, enable encryption where supported, and update vulnerable versions."
+  },
+  "mongod": {
+    "severity": "high",
+    "description": "MongoDB database or data store is reachable and may be unintentionally exposed.",
+    "recommendation": "Restrict access to approved application hosts and trusted networks, require authentication, enable encryption where supported, and update vulnerable versions."
+  },
+  "mongodb": {
+    "severity": "high",
+    "description": "MongoDB database or data store is reachable and may be unintentionally exposed.",
+    "recommendation": "Restrict access to approved application hosts and trusted networks, require authentication, enable encryption where supported, and update vulnerable versions."
+  },
+  "vnc": {
+    "severity": "high",
+    "description": "VNC remote desktop access is reachable and requires review of authentication and encryption.",
+    "recommendation": "Restrict access through a VPN or trusted networks, require strong authentication, and use encrypted connections."
+  },
+  "nfs": {
+    "severity": "high",
+    "description": "NFS file sharing is reachable and may expose exported files to untrusted clients.",
+    "recommendation": "Restrict exports and network access to approved clients, review export permissions, and require appropriate authentication."
+  },
+  "nfs_acl": {
+    "severity": "high",
+    "description": "NFS file sharing is reachable and may expose exported files to untrusted clients.",
+    "recommendation": "Restrict exports and network access to approved clients, review export permissions, and require appropriate authentication."
+  },
+  "http-proxy": {
+    "severity": "medium",
+    "description": "An alternative web or HTTPS service is reachable and may expose an administrative, proxy, or development interface.",
+    "recommendation": "Verify the service is expected, restrict management access, disable unintended proxy access, review banners and software versions, and require HTTPS for sensitive traffic."
+  },
+  "http-alt": {
+    "severity": "medium",
+    "description": "An alternative web or HTTPS service is reachable and may expose an administrative, proxy, or development interface.",
+    "recommendation": "Verify the service is expected, restrict management access, disable unintended proxy access, review banners and software versions, and require HTTPS for sensitive traffic."
+  },
+  "https-alt": {
+    "severity": "medium",
+    "description": "An alternative web or HTTPS service is reachable and may expose an administrative, proxy, or development interface.",
+    "recommendation": "Verify the service is expected, restrict management access, disable unintended proxy access, review banners and software versions, and require HTTPS for sensitive traffic."
+  },
+  "ssl/http": {
+    "severity": "medium",
+    "description": "An alternative web or HTTPS service is reachable and may expose an administrative, proxy, or development interface.",
+    "recommendation": "Verify the service is expected, restrict management access, disable unintended proxy access, review banners and software versions, and require HTTPS for sensitive traffic."
+  },
+  "elasticsearch": {
+    "severity": "high",
+    "description": "An Elasticsearch search or data service is reachable and may expose stored data or management operations.",
+    "recommendation": "Restrict access to trusted application hosts, require authentication and TLS, and update vulnerable versions."
+  },
+  "wap-wsp": {
+    "severity": "medium",
+    "description": "A service is reachable on a port commonly used by Elasticsearch (9200), but this service label does not confirm Elasticsearch.",
+    "recommendation": "Identify the actual service and compare it with the expected configuration; if Elasticsearch is present, restrict access and require authentication and TLS."
+  },
+  "docker": {
+    "severity": "high",
+    "description": "A Docker management API is reachable and may allow unencrypted or unrestricted container administration.",
+    "recommendation": "Disable unauthenticated TCP API access; use a local socket or authenticated TLS access restricted to trusted administrators."
   }
 }
