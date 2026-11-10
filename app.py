@@ -2,13 +2,14 @@ from pathlib import Path
 
 from flask import Flask, request, send_from_directory
 
-app = Flask(__name__, static_folder="dist/assets", static_url_path="/assets")
+# npm run build puts the page in web/dist/.
+web_build = Path(__file__).resolve().parent / "web" / "dist"
+app = Flask(__name__, static_folder=str(web_build / "assets"), static_url_path="/assets")
 
 
 @app.get("/")
 def home():
-    # The React build puts the homepage in dist/.
-    return send_from_directory(Path(app.root_path) / "dist", "index.html")
+    return send_from_directory(web_build, "index.html")
 
 
 @app.post("/api/website")
@@ -18,5 +19,5 @@ def receive_website():
     if not isinstance(website_url, str) or not website_url.strip():
         return {"error": "Enter a website URL."}, 400
 
-    # Send the URL back so we can see that the form reached Flask.
+    # Send the URL back to check that the form works.
     return {"website": website_url.strip()}
