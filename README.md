@@ -30,4 +30,6 @@ py -m venv .venv
 ```
 
 Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) to see the page.
+Enter a full URL such as `https://example.com` and click **Submit**. The page
+shows the URL Flask received.
 Press Ctrl+C in the terminal to stop the server.

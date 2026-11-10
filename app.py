@@ -1,8 +1,33 @@
-from flask import Flask
+from flask import Flask, render_template_string, request
 
 app = Flask(__name__)
 
 
-@app.get("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
-    return "<h1>External Cybersecurity Analyzer</h1>"
+    website = request.form.get("website", "").strip()
+    return render_template_string(
+        """<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>External Cybersecurity Analyzer</title>
+</head>
+<body>
+    <main>
+        <h1>External Cybersecurity Analyzer</h1>
+        <form method="post">
+            <label for="website">Website URL</label>
+            <input id="website" name="website" type="url"
+                   placeholder="https://example.com" value="{{ website }}" required>
+            <button type="submit">Submit</button>
+        </form>
+        {% if website %}
+            <p>Submitted URL: {{ website }}</p>
+        {% endif %}
+    </main>
+</body>
+</html>""",
+        website=website,
+    )
