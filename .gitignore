@@ -7,3 +7,5 @@ __pycache__/
 .obsidian/workspace*
 web/node_modules/
 web/dist/
+/node_modules/
+/dist/
