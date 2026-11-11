@@ -39,7 +39,11 @@ jobs:
               assert page.status_code == 200, "FastAPI could not serve the homepage"
               assert b"<title>External Cybersecurity Analyzer</title>" in page.content
 
-              reply = client.post("/api/website", json={"website": "https://example.com"})
+              form = {"website": "https://example.com"}
+              assert client.post("/api/website", json=form).status_code == 400
+
+              form["has_permission"] = True
+              reply = client.post("/api/website", json=form)
               assert reply.status_code == 200, reply.text
               assert reply.json() == {"website": "https://example.com"}
           print("The homepage and URL form work.")

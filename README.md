@@ -16,10 +16,10 @@ URL the server received.
 ### How the form works
 
 - `home()` in `app.py` sends the built React page when you open `/`.
-- `sendUrl()` in `web/App.tsx` reads the URL you typed, sends it to
-  `/api/website`, and shows the reply.
-- `receive_website()` in `app.py` removes extra spaces, rejects a blank URL,
-  and sends the URL back to the page.
+- `sendUrl()` in `web/App.tsx` sends the URL and the checkbox value to
+  `/api/website`, then shows the reply.
+- `receive_website()` in `app.py` checks that you entered a URL and confirmed
+  you have permission. It then sends the URL back to the page.
 
 ## Run locally
 
