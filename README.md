@@ -57,25 +57,12 @@ Press Ctrl+C to stop the server.
 
 ## GitHub workflow
 
-Clone the repo once to get a local copy.
+Use the shared task list for owners, due dates, and progress.
 
-```bash
-git clone https://github.com/Dylan-Pulley/External-Cybersecurity-Analyzer.git
-cd External-Cybersecurity-Analyzer
-```
-
-1. Start from an up-to-date `main` and make a branch for one change.
-2. Commit and push your branch. Open a pull request to `main` and say what
-   changed and how you checked it.
-3. Open **Checks** on the pull request. **Homepage check** builds React, asks
-   FastAPI for the page, and checks that submitting a URL gets the right reply.
-4. Review and merge once the check passes. GitHub runs it again on `main`.
-
-### Team tasks
-
-Use the shared task list for owners and due dates. If we use a GitHub board,
-add the issues we’re working on and move them through **Todo**, **In Progress**,
-and **Done**. Link the pull request to its issue so we can find the code later.
+1. Make one change on a branch and open a pull request to `main`.
+2. Check that **Homepage check** passes. It builds React and checks that the
+   page loads and the form gets a reply.
+3. Review and merge. GitHub runs the check again on `main`.
 
 ## Render
 
@@ -101,7 +88,3 @@ marking the deploy live.
 
 Set **Auto-Deploy** to **After CI Checks Pass** once the FastAPI homepage
 check passes on `main` and the first FastAPI deploy is live.
-
-Anyone with the live link can open the page. To give a teammate dashboard
-access, a Render workspace admin can go to **Settings → Team members → Invite
-members** on a workspace with a Pro plan or higher.
