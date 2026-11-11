@@ -1,0 +1,39 @@
+name: Homepage check
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  homepage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Build React
+        run: |
+          npm --prefix web ci
+          npm --prefix web run build
+
+      - name: Check the Flask homepage
+        run: |
+          python -m pip install Flask
+          python - <<'PY'
+          from app import app
+
+          page = app.test_client().get("/")
+          assert page.status_code == 200, "Flask could not serve the homepage"
+          assert b"<title>External Cybersecurity Analyzer</title>" in page.data
+          print("Flask served the homepage.")
+          PY
