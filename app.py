@@ -1,23 +1,31 @@
 from pathlib import Path
 
-from flask import Flask, request, send_from_directory
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 # npm run build puts the page in web/dist/.
 web_build = Path(__file__).resolve().parent / "web" / "dist"
-app = Flask(__name__, static_folder=str(web_build / "assets"), static_url_path="/assets")
+app = FastAPI()
+app.mount("/assets", StaticFiles(directory=web_build / "assets"), name="assets")
+
+
+# This is the data React sends when someone submits the form.
+class WebsiteForm(BaseModel):
+    website: str
 
 
 @app.get("/")
 def home():
-    return send_from_directory(web_build, "index.html")
+    return FileResponse(web_build / "index.html")
 
 
 @app.post("/api/website")
-def receive_website():
-    form_data = request.get_json(silent=True)
-    website_url = form_data.get("website") if isinstance(form_data, dict) else None
-    if not isinstance(website_url, str) or not website_url.strip():
-        return {"error": "Enter a website URL."}, 400
+def receive_website(form: WebsiteForm):
+    website_url = form.website.strip()
+    if not website_url:
+        raise HTTPException(status_code=400, detail="Enter a website URL.")
 
     # Send the URL back to check that the form works.
-    return {"website": website_url.strip()}
+    return {"website": website_url}

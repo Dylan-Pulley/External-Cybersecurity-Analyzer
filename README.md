@@ -4,73 +4,87 @@ A tool that assesses an organization's security from the outside, the way an att
 
 Given a domain you own or are authorized to test, the analyzer discovers what is publicly exposed, checks that exposure against known weaknesses and best practices, and produces a report with severity ratings and remediation guidance.
 
+**[Open the live homepage](https://eca-web.onrender.com/)**. The form shows the
+URL the server received.
+
 ## Web interface
 
-- `web/App.tsx` is the page you see in the browser.
-- `app.py` starts Flask and gets the URL from the form.
+- `web/App.tsx` has the React page and URL form.
+- `app.py` uses FastAPI to serve the page and receive the URL.
 - `main.py` runs Dylan's analyzer from the terminal.
 
-You’ll need Node.js and Python. From the repo folder, install the React
-packages and build the page.
+### How the form works
+
+- `home()` in `app.py` sends the built React page when you open `/`.
+- `sendUrl()` in `web/App.tsx` reads the URL you typed, sends it to
+  `/api/website`, and shows the reply.
+- `receive_website()` in `app.py` removes extra spaces, rejects a blank URL,
+  and sends the URL back to the page.
+
+## Run locally
+
+Use Node.js 22.12 or later and Python 3.12. Open a terminal at the top of the
+repo, where `app.py` lives. Build the page first. `--prefix web` tells npm
+where to find the React files.
 
 ```bash
 npm --prefix web ci
 npm --prefix web run build
 ```
 
-Then start Flask using the commands for your system.
+Then install the Python packages and start the server.
 
 **macOS and Linux**
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install Flask
-python -m flask --app app run --port 8000
+python -m pip install -r requirements.txt
+python -m uvicorn app:app --port 8000
 ```
 
 **Windows (PowerShell)**
 
 ```powershell
 py -m venv .venv
-.\.venv\Scripts\python.exe -m pip install Flask
-.\.venv\Scripts\python.exe -m flask --app app run --port 8000
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m uvicorn app:app --port 8000
 ```
 
-Open [localhost:8000](http://127.0.0.1:8000/), enter `https://example.com`, and
-click **Submit**. Flask sends the URL back so you can check that the form works.
-Run `npm --prefix web run build` again after editing the page. Press Ctrl+C
-to stop Flask.
+Open [localhost:8000](http://127.0.0.1:8000/). The form shows the URL FastAPI
+received. After editing the React page, run `npm --prefix web run build` again.
+Press Ctrl+C to stop the server.
 
 ## GitHub workflow
 
-1. Make your changes on a branch and open a pull request to `main`.
-2. Open **Checks** on the pull request. **Homepage check** builds React and
-   makes sure Flask can serve the page.
-3. When the check passes and the changes are reviewed, merge the pull request.
-   GitHub runs the check again on `main`.
+Use the shared task list for owners, due dates, and progress.
+
+1. Make one change on a branch and open a pull request to `main`.
+2. Check that **Homepage check** passes. It builds React and checks that the
+   page loads and the form gets a reply.
+3. Review and merge. GitHub runs the check again on `main`.
 
 ## Render
 
-[eca-web](https://eca-web.onrender.com/) runs as a Python 3 web service on
-Render. It gets its code from this repo’s `main` branch. The root directory is
-blank because `app.py` is at the top of the repo.
+Use these settings to run FastAPI on the `eca-web` service.
+Choose **Python 3** and the **`main`** branch. Leave **Root Directory** blank
+so Render starts at the top of the repo, where `app.py` lives.
 
-**Build Command**
+**Build Command** builds the React page and installs the Python packages.
 
 ```bash
-npm --prefix web ci --include=dev && npm --prefix web run build && python -m pip install Flask gunicorn
+npm --prefix web ci --include=dev && npm --prefix web run build && python -m pip install -r requirements.txt
 ```
 
-**Start Command**
+**Start Command** tells Uvicorn to run the `app` in `app.py`. Render supplies
+`$PORT`.
 
 ```bash
-gunicorn app:app --bind 0.0.0.0:$PORT
+uvicorn app:app --host 0.0.0.0 --port "$PORT"
 ```
 
 **Health Check Path** is `/`. Render checks that the homepage responds before
 marking the deploy live.
 
-**Auto-Deploy** is currently **On Commit**. Once the GitHub check passes on
-`main`, we can choose **After CI Checks Pass** in Render so future deploys
-wait for the check.
+Set **Auto-Deploy** to **After CI Checks Pass** once the FastAPI homepage
+check passes on `main` and the first FastAPI deploy is live.
