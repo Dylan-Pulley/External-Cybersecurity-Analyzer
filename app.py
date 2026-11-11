@@ -11,6 +11,7 @@ app = FastAPI()
 app.mount("/assets", StaticFiles(directory=web_build / "assets"), name="assets")
 
 
+# This is the data React sends when someone submits the form.
 class WebsiteForm(BaseModel):
     website: str
 

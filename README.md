@@ -4,11 +4,22 @@ A tool that assesses an organization's security from the outside, the way an att
 
 Given a domain you own or are authorized to test, the analyzer discovers what is publicly exposed, checks that exposure against known weaknesses and best practices, and produces a report with severity ratings and remediation guidance.
 
+**[Open the live homepage](https://eca-web.onrender.com/)**. The form shows the
+URL the server received.
+
 ## Web interface
 
 - `web/App.tsx` has the React page and URL form.
 - `app.py` uses FastAPI to serve the page and receive the URL.
 - `main.py` runs Dylan's analyzer from the terminal.
+
+### How the form works
+
+- `home()` in `app.py` sends the built React page when you open `/`.
+- `sendUrl()` in `web/App.tsx` reads the URL you typed, sends it to
+  `/api/website`, and shows the reply.
+- `receive_website()` in `app.py` removes extra spaces, rejects a blank URL,
+  and sends the URL back to the page.
 
 ## Run locally
 
@@ -53,7 +64,7 @@ Press Ctrl+C to stop the server.
 
 ## Render
 
-Use these settings to run FastAPI on [eca-web](https://eca-web.onrender.com/).
+Use these settings to run FastAPI on the `eca-web` service.
 Choose **Python 3** and the **`main`** branch. Leave **Root Directory** blank
 so Render starts at the top of the repo, where `app.py` lives.
 

@@ -14,6 +14,7 @@ function App() {
         setMessage("");
 
         try {
+            // Send the URL to the Python server and wait for its reply.
             const response = await fetch("/api/website", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
