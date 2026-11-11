@@ -10,6 +10,7 @@ function App() {
         event.preventDefault();
         const form = new FormData(event.currentTarget);
         const websiteUrl = form.get("website");
+        const hasPermission = form.has("has_permission");
         setSending(true);
         setMessage("");
 
@@ -18,7 +19,7 @@ function App() {
             const response = await fetch("/api/website", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ website: websiteUrl }),
+                body: JSON.stringify({ website: websiteUrl, has_permission: hasPermission }),
             });
             if (!response.ok) {
                 throw new Error("Could not submit the URL.");
@@ -45,6 +46,10 @@ function App() {
                     placeholder="https://example.com"
                     required
                 />
+                <label>
+                    <input type="checkbox" name="has_permission" required />{" "}
+                    I own this website or have permission to test it.
+                </label>
                 <button type="submit" disabled={sending}>
                     {sending ? "Sending…" : "Submit"}
                 </button>
