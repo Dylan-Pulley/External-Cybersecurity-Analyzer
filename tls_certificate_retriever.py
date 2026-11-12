@@ -1,26 +1,26 @@
-from urllib.parse import urlsplit#break into url components like scheme, hostname, and port
+from urllib.parse import urlsplit  # breaks the URL into parts
 
 from sslyze import (
-    ScanCommand, #specifies type of security sslyze should perform
-    ScanCommandAttemptStatusEnum,#indicates individual scan command completed
-    Scanner,#manages & executes scan requests
-    ServerNetworkLocation,#Identifies server and port to contact
-    ServerScanRequest,#Packages target and scan commands into a request
-    ServerScanStatusEnum#enumurates through server scans completed 
+    ScanCommand,
+    ScanCommandAttemptStatusEnum,
+    Scanner,
+    ServerNetworkLocation,
+    ServerScanRequest,
+    ServerScanStatusEnum
 )
 
 
 def GetCertificate(URL):
-    if "://" not in URL:#fix url
+    if "://" not in URL:
         URL = "https://" + URL
 
-    target = urlsplit(URL)#seperate url
+    target = urlsplit(URL)
 
     if target.scheme != "https" or not target.hostname:
         raise ValueError("A valid HTTPS URL is required")
 
     hostname = target.hostname
-    port = target.port or 443#443 set to default target
+    port = target.port or 443
 
     request = ServerScanRequest(
         server_location=ServerNetworkLocation(
@@ -30,35 +30,29 @@ def GetCertificate(URL):
         scan_commands={ScanCommand.CERTIFICATE_INFO}
     )
 
-    scanner = Scanner()#create sslyze scanner object
-    scanner.queue_scans([request])#accept multiple requests
+    scanner = Scanner()
+    scanner.queue_scans([request])
+    result = next(scanner.get_results())
 
-    result = next(scanner.get_results())#grab results as they arrive, built for scalability
-
-    if result.scan_status != ServerScanStatusEnum.COMPLETED:#error check for scan complete
+    if result.scan_status != ServerScanStatusEnum.COMPLETED:
         raise RuntimeError("TLS connection failed")
 
-    #scan_result = requested scan commands
     certificate_scan = result.scan_result.certificate_info
 
-    #check for scan status = complete
     if certificate_scan.status != ScanCommandAttemptStatusEnum.COMPLETED:
         raise RuntimeError("Certificate retrieval failed")
 
-    for deployment in certificate_scan.result.certificate_deployments:#scan for multiple certs
+    for deployment in certificate_scan.result.certificate_deployments:
         if deployment.received_certificate_chain:
             certificate = deployment.received_certificate_chain[0]
-            return certificate
+
+            print("Certificate retrieved successfully")
+            print("Subject:", certificate.subject.rfc4514_string())
+            print("Issuer:", certificate.issuer.rfc4514_string())
+            print("Serial Number:", certificate.serial_number)
+            print("Valid From:", certificate.not_valid_before_utc)
+            print("Valid Until:", certificate.not_valid_after_utc)
+
+            return certificate  # gives the certificate to the analyzer
 
     raise RuntimeError("No TLS certificate found")
-
-
-if __name__ == "__main__":
-    certificate = GetCertificate("https://example.org")
-
-    #later add here return subject, issuer, ssn, validity, and expiration date
-    print("Subject:", certificate.subject)
-    print("Issuer:", certificate.issuer)
-    print("Serial Number:", certificate.serial_number)
-    print("Valid From:", certificate.not_valid_before_utc)
-    print("Valid Until:", certificate.not_valid_after_utc)
