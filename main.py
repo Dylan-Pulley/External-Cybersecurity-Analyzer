@@ -8,8 +8,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 #Scripts
 import port.port_getter as port_getter
 import port.port_analyzer as port_analyzer
-import port_getter
-import port_analyzer
+#import port_getter
+#import port_analyzer
 from tls_certificate_retriever import GetCertificate
 from tls_vulnerability_analyzer import Analyze_Certificate  
 from vulnerable_localhost import main as Start_Test_Website  
@@ -37,9 +37,11 @@ def Port_Analyzer(IP):
     for analysis in port_analysis:
         print(analysis)
 
+
 def TLS_Analyzer(URL):
-    for index in range(1000):
-        print(index)
+    certificate = GetCertificate(URL)
+    analysis = Analyze_Certificate(certificate)
+    return analysis
 
 
 def main(URL):    
