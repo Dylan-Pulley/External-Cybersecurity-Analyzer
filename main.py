@@ -1,14 +1,21 @@
 #Library Imports
+
 import socket
+import sys 
 from urllib.parse import urlsplit
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 #Scripts
 import port.port_getter as port_getter
 import port.port_analyzer as port_analyzer
+import port_getter
+import port_analyzer
+from tls_certificate_retriever import GetCertificate
+from tls_vulnerability_analyzer import Analyze_Certificate  
+from vulnerable_localhost import main as Start_Test_Website  
 
-#Test
 import time
+
 
 def Get_IP(URL):
     hostname = urlsplit(URL).hostname
@@ -60,7 +67,9 @@ def main(URL):
     print(results)
 
 
-
-
-
-main("http://127.0.0.1:5000")
+if __name__ == "__main__":  
+    if len(sys.argv) > 1 and sys.argv[1] == "--test-server":  
+        Start_Test_Website()  
+    else:  
+        URL = sys.argv[1] if len(sys.argv) > 1 else "https://localhost:8443"  
+        main(URL)  
