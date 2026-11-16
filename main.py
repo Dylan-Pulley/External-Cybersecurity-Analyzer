@@ -7,8 +7,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 #Scripts
 import port.port_getter as port_getter
 import port.port_analyzer as port_analyzer
-from tls_certificate_retriever import GetCertificate
-from tls_vulnerability_analyzer import Analyze_Certificate  
+from tls.tls_certificate_retriever import GetCertificate
+from tls.tls_vulnerability_analyzer import Analyze_Certificate
+
 from vulnerable_localhost import main as Start_Test_Website  
 
 #Test Imports
