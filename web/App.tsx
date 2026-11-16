@@ -26,9 +26,9 @@ function App() {
             }
 
             const reply: { website: string } = await response.json();
-            setMessage(`Submitted URL: ${reply.website}`);
+            setMessage(`Submitted IP: ${reply.website}`);
         } catch {
-            setMessage("Could not submit the URL. Please try again.");
+            setMessage("Could not submit the IP. Please try again.");
         } finally {
             setSending(false);
         }

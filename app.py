@@ -5,6 +5,10 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, StrictBool
 
+
+#Main application Test
+import main
+
 # npm run build puts the page in web/dist/.
 web_build = Path(__file__).resolve().parent / "web" / "dist"
 app = FastAPI()
@@ -31,5 +35,9 @@ def receive_website(form: WebsiteForm):
     if not form.has_permission:
         raise HTTPException(status_code=400, detail="Confirm you have permission to test this website.")
 
+
+    #Main Test
+    ip_address = main.Get_IP(website_url)
+
     # Send the URL back to check that the form works.
-    return {"website": website_url}
+    return {"website": ip_address}

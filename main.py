@@ -16,6 +16,7 @@ def Get_IP(URL):
     return ip
 
 def Port_Analyzer(IP):
+    #This can get condenced down into the port_analyzer script
     port_range = "1-65535"
 
     start_time = time.perf_counter()
@@ -63,4 +64,4 @@ def main(URL):
 
 
 
-main("http://127.0.0.1:5000")
+#main("http://127.0.0.1:5000")
