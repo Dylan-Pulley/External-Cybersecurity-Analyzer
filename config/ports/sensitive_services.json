@@ -123,5 +123,40 @@
     "severity": "high",
     "description": "A Docker management API is reachable and may allow unencrypted or unrestricted container administration.",
     "recommendation": "Disable unauthenticated TCP API access; use a local socket or authenticated TLS access restricted to trusted administrators."
+  },
+  "wsman": {
+    "severity": "medium",
+    "description": "A WS-Management endpoint is reachable. It may provide remote administration through WinRM or another implementation.",
+    "recommendation": "Verify the listening application and restrict management access to approved hosts. Review authentication and transport settings."
+  },
+  "wsmans": {
+    "severity": "medium",
+    "description": "A WS-Management endpoint over TLS is reachable. It may provide remote administration through WinRM or another implementation.",
+    "recommendation": "Verify the listening application and restrict management access to approved hosts. Review authentication and TLS settings."
+  },
+  "ms-sql-s": {
+    "severity": "medium",
+    "description": "A Microsoft SQL Server listener may be reachable from the scan location.",
+    "recommendation": "Verify the service and restrict database access to approved application and administration hosts."
+  },
+  "etcd-client": {
+    "severity": "medium",
+    "description": "An etcd client endpoint may be reachable from the scan location.",
+    "recommendation": "Verify the service, restrict access to authorized clients, and require authenticated TLS."
+  },
+  "etcd-server": {
+    "severity": "medium",
+    "description": "An etcd peer endpoint may be reachable from the scan location.",
+    "recommendation": "Verify the service, restrict access to trusted cluster members, and require authenticated TLS for peer traffic."
+  },
+  "sun-sr-https": {
+    "severity": "medium",
+    "description": "A service commonly associated with TCP port 6443 is reachable. This port is also used by Kubernetes API servers.",
+    "recommendation": "Identify the listening application. If it is a Kubernetes API server, restrict access to authorized clients and review authentication and authorization."
+  },
+  "kubelet": {
+    "severity": "medium",
+    "description": "A Kubernetes kubelet API may be reachable from the scan location.",
+    "recommendation": "Verify the service, limit access to authorized cluster components, and review kubelet authentication and authorization."
   }
 }

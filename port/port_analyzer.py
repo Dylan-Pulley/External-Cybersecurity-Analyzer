@@ -5,13 +5,29 @@ import port.load_iana_ports as iana_ports
 SENSITIVE_SERVICE_PATH = (Path(__file__).resolve().parent.parent/ "config"/ "ports"/ "sensitive_services.json")
 FALLBACK_PATH = (Path(__file__).resolve().parent.parent/ "config"/ "ports"/ "port_fallbacks.json")
 
+def Load_Json_Object(path):
+    try:
+        with path.open("r", encoding="utf-8") as file:
+            data = json.load(file)
+    except OSError as exc:
+        raise ValueError(f"Could not read {path.name}: {exc}") from exc
+    except UnicodeDecodeError as exc:
+        raise ValueError(f"{path.name} must be encoded as UTF-8") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            f"{path.name}, line {exc.lineno}, column {exc.colno}: {exc.msg}"
+        ) from exc
+
+    if not isinstance(data, dict):
+        raise ValueError(f"{path.name} must contain a JSON object")
+
+    return data
+
 def Load_Rules():
-    with open(SENSITIVE_SERVICE_PATH, "r", encoding="utf-8") as file:
-        return json.load(file)
+    return Load_Json_Object(SENSITIVE_SERVICE_PATH)
 
 def Load_Fallback_Rules():
-    with open(FALLBACK_PATH, "r", encoding="utf-8") as file:
-            return json.load(file)
+    return Load_Json_Object(FALLBACK_PATH)
 
 def Analyze_Ports(OPEN_PORTS):
     rules = Load_Rules()

@@ -67,8 +67,12 @@ def main(URL):
 
 #Hosted Movie Website Address "http://127.0.0.1:5000"
 if __name__ == "__main__":  
-    if len(sys.argv) > 1 and sys.argv[1] == "--test-server":  
+    main("http://127.0.0.1:5000")
+
+    
+    '''if len(sys.argv) > 1 and sys.argv[1] == "--test-server":  
         Start_Test_Website()  
     else:  
         URL = sys.argv[1] if len(sys.argv) > 1 else "https://localhost:8443" 
         main(URL)
+    '''
