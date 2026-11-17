@@ -1,9 +1,9 @@
 import nmap
 
-def Get_Open_Ports(IP, PORT):
+def Get_Open_Ports(IP):
     open_ports = []
     scanner = nmap.PortScanner()
-    scanner.scan(hosts = IP, ports = PORT, arguments="-sT -sV")
+    scanner.scan(hosts = IP, ports = "1-65535", arguments="-sT -sV")
     for host in scanner.all_hosts():
         for port in scanner[host].all_tcp():
             if scanner[host]["tcp"][port]["state"] == "open":

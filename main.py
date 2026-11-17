@@ -22,11 +22,8 @@ def Get_IP(URL):
     return ip
 
 def Port_Analyzer(IP):
-    #This can get condenced down into the port_analyzer script
-    port_range = "1-65535"
-
     start_time = time.perf_counter()
-    open_ports = port_getter.Get_Open_Ports(IP, str(port_range))
+    open_ports = port_getter.Get_Open_Ports(IP)
     end_time = time.perf_counter()
     for port in open_ports:
         print(port)
@@ -68,10 +65,10 @@ def main(URL):
 
     print(results)
 
-#main("http://127.0.0.1:5000")
+#Hosted Movie Website Address "http://127.0.0.1:5000"
 if __name__ == "__main__":  
     if len(sys.argv) > 1 and sys.argv[1] == "--test-server":  
         Start_Test_Website()  
     else:  
-        URL = sys.argv[1] if len(sys.argv) > 1 else "https://localhost:8443"  
-        main(URL)  
+        URL = sys.argv[1] if len(sys.argv) > 1 else "https://localhost:8443" 
+        main(URL)
