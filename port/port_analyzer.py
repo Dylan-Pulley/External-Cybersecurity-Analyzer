@@ -39,7 +39,6 @@ def Analyze_Ports(OPEN_PORTS):
                 result.update(
                     service=likely_service,
                     service_source="iana",
-                    status="informational",
                     severity="unknown",
                     description=f"IANA lists {likely_service} for TCP port {number}.",
                     recommendation="Verify which application is listening and whether access is intended",
