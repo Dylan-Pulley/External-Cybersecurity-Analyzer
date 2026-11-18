@@ -10,8 +10,6 @@ import port.port_analyzer as port_analyzer
 from tls.tls_certificate_retriever import GetCertificate
 from tls.tls_vulnerability_analyzer import Analyze_Certificate
 
-from vulnerable_localhost import main as Start_Test_Website  
-
 #Test Imports
 import time
 
@@ -33,7 +31,6 @@ def Port_Analyzer(IP):
 
     for analysis in port_analysis:
         print(analysis)
-
     return port_analysis
 
 
@@ -70,10 +67,13 @@ def main(URL):
 
 #Hosted Movie Website Address "http://127.0.0.1:5000"
 if __name__ == "__main__":  
-    main("http://127.0.0.1:5000")
 
     
-    '''if len(sys.argv) > 1 and sys.argv[1] == "--test-server":  
+    main("http://scanme.nmap.org")
+
+    
+    '''
+    if len(sys.argv) > 1 and sys.argv[1] == "--test-server":  
         Start_Test_Website()  
     else:  
         URL = sys.argv[1] if len(sys.argv) > 1 else "https://localhost:8443" 

@@ -28,6 +28,31 @@ class RuntimeTests(unittest.TestCase):
                 "website": "https://example.com", "results": results,
             })
 
+    def test_scan_returns_port_error_alongside_tls_result(self):
+        website = "https://example.com"
+        port_error = "Nmap could not complete the scan."
+        tls_result = {"status": "NOT_EXPIRED"}
+
+        with (
+            patch("app.main.Get_IP", return_value="192.0.2.1"),
+            patch("app.main.Port_Analyzer", side_effect=RuntimeError(port_error)),
+            patch("app.main.TLS_Analyzer", return_value=tls_result),
+            TestClient(app) as client,
+        ):
+            response = client.post(
+                "/api/scan",
+                json={"website": website, "has_permission": True},
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {
+            "website": website,
+            "results": {
+                "ports": {"error": port_error},
+                "tls": tls_result,
+            },
+        })
+
 
 if __name__ == "__main__":
     unittest.main()

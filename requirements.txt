@@ -3,3 +3,4 @@ uvicorn
 cryptography
 sslyze
 python-nmap
+httpx2

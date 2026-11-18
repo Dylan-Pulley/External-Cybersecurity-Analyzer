@@ -2,8 +2,8 @@ import json
 from pathlib import Path
 import port.load_iana_ports as iana_ports 
 
-SENSITIVE_SERVICE_PATH = (Path(__file__).resolve().parent.parent/ "config"/ "ports"/ "sensitive_services.json")
-FALLBACK_PATH = (Path(__file__).resolve().parent.parent/ "config"/ "ports"/ "port_fallbacks.json")
+SENSITIVE_SERVICE_PATH = (Path(__file__).resolve().parent.parent/ "config"/ "port"/ "sensitive_services.json")
+FALLBACK_PATH = (Path(__file__).resolve().parent.parent/ "config"/ "port"/ "port_fallbacks.json")
 
 def Load_Json_Object(path):
     try:
@@ -32,7 +32,8 @@ def Load_Fallback_Rules():
 def Analyze_Ports(OPEN_PORTS):
     rules = Load_Rules()
     fallback = Load_Fallback_Rules()
-    iana_port_list = iana_ports.load_iana_ports()
+    iana_port_list = None
+    iana_lookup_attempted = False
     analyzed_results = []
 
     for port in OPEN_PORTS:
@@ -47,8 +48,17 @@ def Analyze_Ports(OPEN_PORTS):
         elif service_key and service_key != "unknown":
              result.update(fallback["no_matching_rule"])
 
-        else:
-            iana_names = iana_port_list.get((number, "tcp"))
+        else: 
+            if not iana_lookup_attempted:
+                iana_port_list = iana_ports.load_iana_ports()
+                iana_lookup_attempted = True
+
+            if iana_port_list is None:
+                iana_names = None
+                result["iana_lookup_status"] = "unavailable"
+                
+            else:
+                iana_names = iana_port_list.get((number, "tcp"))
 
             if iana_names:
                 likely_service = ", ".join(sorted(iana_names))
