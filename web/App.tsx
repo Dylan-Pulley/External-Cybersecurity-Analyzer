@@ -23,9 +23,13 @@ function App() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ website: websiteUrl, has_permission: hasPermission }),
             });
+            if (!response.headers.get("content-type")?.includes("application/json")) {
+                throw new Error(`The scan server returned a webpage instead of results (HTTP ${response.status}). Refresh and try again. If it keeps happening, report this status code.`);
+            }
             const reply = await response.json();
             if (!response.ok) {
-                throw new Error(typeof reply.detail === "string" ? reply.detail : "Could not run the scan.");
+                const detail = typeof reply.detail === "string" ? reply.detail : "Could not run the scan.";
+                throw new Error(`${detail} (HTTP ${response.status})`);
             }
 
             setMessage(`Scan finished for ${reply.website}. Check each tool's results below.`);
