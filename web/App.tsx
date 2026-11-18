@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 function App() {
     const [message, setMessage] = useState("");
     const [sending, setSending] = useState(false);
+    const [output, setOutput] = useState("Scan results will appear here.");
 
     async function sendUrl(event: FormEvent<HTMLFormElement>) {
         // Stop the page from reloading when we submit the form.
@@ -13,22 +14,26 @@ function App() {
         const hasPermission = form.has("has_permission");
         setSending(true);
         setMessage("");
+        setOutput(`Scanning ${websiteUrl}…\nWaiting for port and TLS results.`);
 
         try {
             // Send the URL to the Python server and wait for its reply.
-            const response = await fetch("/api/website", {
+            const response = await fetch("/api/scan", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ website: websiteUrl, has_permission: hasPermission }),
             });
+            const reply = await response.json();
             if (!response.ok) {
-                throw new Error("Could not submit the URL.");
+                throw new Error(typeof reply.detail === "string" ? reply.detail : "Could not run the scan.");
             }
 
-            const reply: { website: string } = await response.json();
-            setMessage(`Submitted IP: ${reply.website}`);
-        } catch {
-            setMessage("Could not submit the IP. Please try again.");
+            setMessage(`Scan finished for ${reply.website}. Check each tool's results below.`);
+            setOutput(JSON.stringify(reply, null, 2));
+        } catch (error) {
+            const detail = error instanceof Error ? error.message : "Could not run the scan. Please try again.";
+            setMessage(detail);
+            setOutput(`Error: ${detail}`);
         } finally {
             setSending(false);
         }
@@ -51,10 +56,18 @@ function App() {
                     I own this website or have permission to test it.
                 </label>
                 <button type="submit" disabled={sending}>
-                    {sending ? "Sending…" : "Submit"}
+                    {sending ? "Scanning…" : "Run scan"}
                 </button>
             </form>
             <p role="status">{message}</p>
+            <div
+                aria-label="Scan results"
+                aria-busy={sending}
+                tabIndex={0}
+                style={{ background: "#111827", color: "#a7f3d0", padding: "1rem", borderRadius: "6px", minHeight: "180px", maxHeight: "500px", overflow: "auto" }}
+            >
+                <pre style={{ margin: 0, whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{output}</pre>
+            </div>
         </main>
     );
 }

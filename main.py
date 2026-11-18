@@ -34,6 +34,8 @@ def Port_Analyzer(IP):
     for analysis in port_analysis:
         print(analysis)
 
+    return port_analysis
+
 
 def TLS_Analyzer(URL):
     certificate = GetCertificate(URL)
@@ -64,6 +66,7 @@ def main(URL):
             print(f"{scan_name} scan failed: {error}")
 
     print(results)
+    return results
 
 #Hosted Movie Website Address "http://127.0.0.1:5000"
 if __name__ == "__main__":  

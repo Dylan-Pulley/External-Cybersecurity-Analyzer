@@ -1,4 +1,6 @@
 from pathlib import Path
+import socket
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
@@ -27,6 +29,7 @@ def home():
 
 
 @app.post("/api/website")
+@app.post("/api/scan")
 def receive_website(form: WebsiteForm):
     website_url = form.website.strip()
     if not website_url:
@@ -35,9 +38,18 @@ def receive_website(form: WebsiteForm):
     if not form.has_permission:
         raise HTTPException(status_code=400, detail="Confirm you have permission to test this website.")
 
+    try:
+        target = urlsplit(website_url)
+        if target.scheme != "https" or not target.hostname or target.username or target.password:
+            raise ValueError("Enter an HTTPS URL without credentials.")
+        # Validate the port before handing the URL to the tools.
+        target.port
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
 
-    #Main Test
-    #ip_address = main.Get_IP(website_url)
+    try:
+        results = main.main(website_url)
+    except socket.gaierror as error:
+        raise HTTPException(status_code=400, detail="Could not resolve the website hostname.") from error
 
-    # Send the URL back to check that the form works.
-    return {"website": "http://127.0.0.1:5000"}
+    return {"website": website_url, "results": results}
