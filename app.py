@@ -37,7 +37,7 @@ def receive_website(form: WebsiteForm):
 
 
     #Main Test
-    ip_address = main.Get_IP(website_url)
+    #ip_address = main.Get_IP(website_url)
 
     # Send the URL back to check that the form works.
-    return {"website": ip_address}
+    return {"website": "http://127.0.0.1:5000"}
