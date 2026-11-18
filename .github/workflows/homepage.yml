@@ -31,6 +31,7 @@ jobs:
           python -m pip install -r requirements.txt httpx2
           python - <<'PY'
           from fastapi.testclient import TestClient
+          from unittest.mock import patch
 
           from app import app
 
@@ -43,8 +44,11 @@ jobs:
               assert client.post("/api/website", json=form).status_code == 400
 
               form["has_permission"] = True
-              reply = client.post("/api/website", json=form)
+              results = {"ports": [], "tls": {"status": "NOT_EXPIRED"}}
+              with patch("app.main.main", return_value=results) as scan:
+                  reply = client.post("/api/scan", json=form)
+                  scan.assert_called_once_with(form["website"])
               assert reply.status_code == 200, reply.text
-              assert reply.json() == {"website": "https://example.com"}
+              assert reply.json() == {"website": form["website"], "results": results}
           print("The homepage and URL form work.")
           PY

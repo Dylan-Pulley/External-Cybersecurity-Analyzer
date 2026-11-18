@@ -5,21 +5,29 @@ A tool that assesses an organization's security from the outside, the way an att
 Given a domain you own or are authorized to test, the analyzer discovers what is publicly exposed, checks that exposure against known weaknesses and best practices, and produces a report with severity ratings and remediation guidance.
 
 **[Open the live homepage](https://eca-web.onrender.com/)**. The form shows the
-URL the server received.
+submitted URL and port/TLS scan results in a terminal-style results box.
 
 ## Web interface
 
 - `web/App.tsx` has the React page and URL form.
 - `app.py` uses FastAPI to serve the page and receive the URL.
-- `main.py` runs Dylan's analyzer from the terminal.
+- `main.py` coordinates the port and TLS tools and returns their results. It can
+  also run from the terminal.
 
 ### How the form works
 
 - `home()` in `app.py` sends the built React page when you open `/`.
 - `sendUrl()` in `web/App.tsx` sends the URL and the checkbox value to
-  `/api/website`, then shows the reply.
+  `/api/scan`, then displays the returned JSON in the results box.
 - `receive_website()` in `app.py` checks that you entered a URL and confirmed
-  you have permission. It then sends the URL back to the page.
+  you have permission, validates the HTTPS URL, and calls `main.main(website_url)`.
+- The coordinator runs port and TLS checks concurrently. Each tool returns its
+  findings; a tool failure becomes an `error` in that tool's result.
+- FastAPI returns `{"website": "https://example.com", "results": {"ports": [], "tls": {}}}`
+  with the actual findings. `/api/website` remains an alias for the same scan route.
+- The browser shows a loading message while the request runs, then displays the
+  results or an API error. This waits for both tools; it does not stream Python
+  `print()` output or create a background job.
 
 ## Run locally
 
@@ -52,12 +60,33 @@ py -m venv .venv
 ```
 
 Open [localhost:8000](http://127.0.0.1:8000/). The form shows the URL FastAPI
-received. After editing the React page, run `npm --prefix web run build` again.
+received and the returned scan results. After editing the React page, run
+`npm --prefix web run build` again.
 Press Ctrl+C to stop the server.
+
+Port scanning also requires the Nmap executable installed on the server and
+available on PATH; `python-nmap` is its Python wrapper.
+
+### Integration notes — November 17, 2026
+
+The React form, FastAPI route, and existing port/TLS coordinator are connected.
+`Port_Analyzer()` returns its analysis and `main()` returns the combined results.
+The API validates blank targets, HTTPS URL syntax, permission confirmation, and
+hostname resolution. The TLS tool currently checks certificate expiration.
+
+Validation: React production build and mocked API/tool checks passed, including
+both route names, rejected requests, combined results, and partial tool failure.
+The GitHub homepage check mocks scanning so CI does not scan external targets.
+Live scanner execution and the hosted deployment still need verification.
+
+Follow-up work: background jobs with status/cancellation and timeouts; target
+control verification and scan scope enforcement; structured finding presentation.
+The permission checkbox records an affirmation, not proof of target control.
 
 ## GitHub workflow
 
-Use the shared task list for owners, due dates, and progress.
+Use the [shared task list](https://docs.google.com/spreadsheets/d/1F9M5YKT3g6U5BnnFlEZnJIwIQvLR8aKla8udMgQ3K4g/edit)
+for owners, due dates, and progress.
 
 1. Make one change on a branch and open a pull request to `main`.
 2. Check that **Homepage check** passes. It builds React and checks that the
