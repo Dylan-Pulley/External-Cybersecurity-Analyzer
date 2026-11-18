@@ -10,6 +10,15 @@ permissions:
   contents: read
 
 jobs:
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify the deployment image and Nmap executable
+        run: docker build --target verification --tag eca-runtime-check .
+      - name: Build the production image
+        run: docker build --target production --tag eca-production .
+
   homepage:
     runs-on: ubuntu-latest
     steps:

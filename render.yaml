@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: eca-web
+    runtime: docker
+    plan: free
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    autoDeployTrigger: checksPass

@@ -95,25 +95,40 @@ for owners, due dates, and progress.
 
 ## Render
 
-Use these settings to run FastAPI on the `eca-web` service.
-Choose **Python 3** and the **`main`** branch. Leave **Root Directory** blank
-so Render starts at the top of the repo, where `app.py` lives.
+The root `Dockerfile` builds React and installs Python dependencies plus the
+**Nmap executable** using Debian's package manager. `python-nmap` alone does not
+install Nmap. The image checks `nmap --version` and `nmap.PortScanner()` during
+build, so a missing executable fails deployment instead of the first scan.
+The application runs as an unprivileged user; the existing TCP connect scan
+(`-sT -sV`) does not require raw-socket privileges.
 
-**Build Command** builds the React page and installs the Python packages.
+`render.yaml` configures `eca-web` with the Docker runtime, the `main` branch,
+health check `/`, and deployments after CI passes. Docker's default command
+starts Uvicorn on Render's `$PORT` (or port 10000 locally).
+
+### Apply to the existing service
+
+Adding a Dockerfile does not automatically change a Python service's runtime.
+In the existing **eca-web** service, open **Settings → Build → Source → Edit**,
+keep the current team repository and `main` branch, choose **Docker**, and deploy.
+Use `./Dockerfile` with the repository root as its build context. Clear any old
+Docker Command override so the image's default command starts FastAPI.
+If this service is managed by a Blueprint, sync the updated `render.yaml`
+instead. Reuse the existing service to preserve its URL and settings.
+
+The old Python build/start commands are replaced by the Dockerfile. No separate
+`apt-get` command is needed in Render's Build Command field.
+
+### Verify the image
 
 ```bash
-npm --prefix web ci --include=dev && npm --prefix web run build && python -m pip install -r requirements.txt
+docker build --target verification -t eca-check .
+docker build -t eca .
+docker run --rm -p 8000:10000 eca
 ```
 
-**Start Command** tells Uvicorn to run the `app` in `app.py`. Render supplies
-`$PORT`.
-
-```bash
-uvicorn app:app --host 0.0.0.0 --port "$PORT"
-```
-
-**Health Check Path** is `/`. Render checks that the homepage responds before
-marking the deploy live.
-
-Set **Auto-Deploy** to **After CI Checks Pass** once the FastAPI homepage
-check passes on `main` and the first FastAPI deploy is live.
+The verification stage confirms Nmap is on PATH and discoverable by python-nmap,
+then checks the homepage and a mocked scan response. It does not scan hosts.
+GitHub Actions runs these checks for pull requests and pushes to `main`.
+After deploying, confirm the build log shows the Nmap version and the service
+starts successfully. Only run scans against targets you are authorized to test.
