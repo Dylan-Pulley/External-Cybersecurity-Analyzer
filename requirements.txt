@@ -2,3 +2,4 @@ fastapi
 uvicorn
 cryptography
 sslyze
+python-nmap
