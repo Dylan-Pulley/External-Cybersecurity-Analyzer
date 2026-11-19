@@ -76,6 +76,7 @@ def main(URL):
 
 #Hosted Movie Website Address "http://127.0.0.1:5000"
 if __name__ == "__main__":  
+    main(sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:5000")  #for test site
 
     
     main("http://scanme.nmap.org")
