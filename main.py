@@ -48,31 +48,30 @@ def TLS_Analyzer(URL):
     analysis = Analyze_Certificate(certificate)
     return analysis
 
-
-def main(URL):    
+def main(URL):
     print("Running...")
     ip = Get_IP(URL)
 
-    results = {}
-    
     with ThreadPoolExecutor(max_workers=2) as executor:
         scans = {
             executor.submit(Port_Analyzer, str(ip)): "ports",
             executor.submit(TLS_Analyzer, str(URL)): "tls",
         }
 
-    for future in as_completed(scans):
-        scan_name = scans[future]
+        for future in as_completed(scans):
+            scan_name = scans[future]
 
-        try:
-            results[scan_name] = future.result()
-            print(f"{scan_name} scan completed")
-        except Exception as error:
-            results[scan_name] = {"error": str(error)}
-            print(f"{scan_name} scan failed: {error}")
+            try:
+                result = future.result()
+                print(f"{scan_name} scan completed")
+            except Exception as error:
+                result = {"error": str(error)}
+                print(f"{scan_name} scan failed: {error}")
 
-    print(results)
-    return results
+            yield {
+                "scan": scan_name,
+                "result": result
+            }
 
 #Hosted Movie Website Address "http://127.0.0.1:5000"
 if __name__ == "__main__":  

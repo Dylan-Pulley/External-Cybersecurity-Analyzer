@@ -23,17 +23,70 @@ function App() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ website: websiteUrl, has_permission: hasPermission }),
             });
-            if (!response.headers.get("content-type")?.includes("application/json")) {
-                throw new Error(`The scan server returned a webpage instead of results (HTTP ${response.status}). Refresh and try again. If it keeps happening, report this status code.`);
-            }
-            const reply = await response.json();
             if (!response.ok) {
-                const detail = typeof reply.detail === "string" ? reply.detail : "Could not run the scan.";
-                throw new Error(`${detail} (HTTP ${response.status})`);
+                const reply = await response.json();
+                throw new Error(
+                    typeof reply.detail === "string"
+                        ? reply.detail
+                        : `Could not run the scan (HTTP ${response.status}).`
+                );
             }
 
-            setMessage(`Scan finished for ${reply.website}. Check each tool's results below.`);
-            setOutput(JSON.stringify(reply, null, 2));
+            if (!response.headers.get("content-type")?.includes("application/x-ndjson")) {
+                throw new Error("The scan server returned an unexpected response format.");
+            }
+
+            if (!response.body) {
+                throw new Error("The scan server returned no response body.");
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+
+            const combined: {
+                website: string;
+                results: Record<string, unknown>;
+            } = {
+                website: String(websiteUrl),
+                results: {},
+            };
+
+            function processLine(line: string) {
+                if (!line.trim()) return;
+
+                const reply = JSON.parse(line);
+                Object.assign(combined.results, reply.results);
+
+                setOutput(JSON.stringify(combined, null, 2));
+                setMessage("Received scan results. Waiting for remaining checks.");
+            }
+
+            try {
+                while (true) {
+                    const { value, done } = await reader.read();
+
+                    buffer += decoder.decode(value, { stream: !done });
+
+                    let newline;
+                    while ((newline = buffer.indexOf("\n")) !== -1) {
+                        processLine(buffer.slice(0, newline));
+                        buffer = buffer.slice(newline + 1);
+                    }
+
+                    if (done) break;
+                }
+
+                processLine(buffer);
+            } finally {
+                reader.releaseLock();
+            }
+
+            setMessage(
+                "error" in combined.results
+                    ? "The scan reported an error. See the results below."
+                    : `Scan finished for ${combined.website}.`
+            );
         } catch (error) {
             const detail = error instanceof Error ? error.message : "Could not run the scan. Please try again.";
             setMessage(detail);

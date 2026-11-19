@@ -11,6 +11,8 @@ from pydantic import BaseModel, StrictBool
 
 #Main application Test
 import main
+import json
+from fastapi.responses import StreamingResponse
 
 # npm run build puts the page in web/dist/.
 web_build = Path(__file__).resolve().parent / "web" / "dist"
@@ -50,9 +52,22 @@ def receive_website(form: WebsiteForm):
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
 
-    try:
-        results = main.main(website_url)
-    except socket.gaierror as error:
-        raise HTTPException(status_code=400, detail="Could not resolve the website hostname.") from error
+    def stream_results():
+        try:
+            for results in main.main(website_url):
+                message = {
+                    "website": website_url,
+                    "results": {
+                        results["scan"]: results["result"]
+                    }
+                }
+                yield json.dumps(message) + "\n"
+        except socket.gaierror:
+            yield json.dumps({
+                "website": website_url,
+                "results": {
+                    "error": "Could not resolve the website hostname."
+                }
+            }) + "\n"
 
-    return {"website": website_url, "results": results}
+    return StreamingResponse(stream_results(), media_type="application/x-ndjson")
