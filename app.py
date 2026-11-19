@@ -1,3 +1,4 @@
+
 from pathlib import Path
 import socket
 from urllib.parse import urlsplit
@@ -39,9 +40,11 @@ def receive_website(form: WebsiteForm):
         raise HTTPException(status_code=400, detail="Confirm you have permission to test this website.")
 
     try:
+        if "://" not in website_url:  #!
+            website_url = "https://" + website_url  #!
         target = urlsplit(website_url)
-        if target.scheme != "https" or not target.hostname or target.username or target.password:
-            raise ValueError("Enter an HTTPS URL without credentials.")
+        if target.scheme not in ("http", "https") or not target.hostname or target.username or target.password:  #changed here for http target
+            raise ValueError("Enter an HTTP/HTTPS URL without credentials.")  #and here too
         # Validate the port before handing the URL to the tools.
         target.port
     except ValueError as error:

@@ -1,3 +1,4 @@
+
 #Library Imports
 import socket
 import sys 
@@ -15,7 +16,7 @@ import time
 
 
 def Get_IP(URL):
-    hostname = urlsplit(URL).hostname
+    hostname = urlsplit(URL if "://" in URL else "https://" + URL).hostname  #need to find http in url
     ip = socket.gethostbyname(hostname)
     return ip
 
@@ -36,6 +37,14 @@ def Port_Analyzer(IP):
 
 def TLS_Analyzer(URL):
     certificate = GetCertificate(URL)
+    if certificate is None:  #checking for tls validity on either http or https
+        hostname = urlsplit(URL).hostname  
+        return {  
+            "check": "tls_certificate_expiration",  
+            "status": "HTTPS_UNAVAILABLE",  
+            "is_expired": None,  
+            "message": f"HTTP does not use TLS. No HTTPS certificate was available at {hostname}:443."  
+        }  #added ends here
     analysis = Analyze_Certificate(certificate)
     return analysis
 
@@ -67,6 +76,7 @@ def main(URL):
 
 #Hosted Movie Website Address "http://127.0.0.1:5000"
 if __name__ == "__main__":  
+    #main(sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:5000")  #for test site
 
     
     main("http://scanme.nmap.org")
