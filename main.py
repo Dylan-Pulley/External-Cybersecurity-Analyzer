@@ -10,6 +10,7 @@ import port.port_getter as port_getter
 import port.port_analyzer as port_analyzer
 from tls.tls_certificate_retriever import GetCertificate
 from tls.tls_vulnerability_analyzer import Analyze_Certificate
+from tls.tls_ca_trust_analyzer import Analyze_CA_Trust
 
 #Test Imports
 import time
@@ -46,6 +47,7 @@ def TLS_Analyzer(URL):
             "message": f"HTTP does not use TLS. No HTTPS certificate was available at {hostname}:443."  
         }  #added ends here
     analysis = Analyze_Certificate(certificate)
+    analysis["ca_trust_analysis"] = Analyze_CA_Trust(URL)
     return analysis
 
 def main(URL):

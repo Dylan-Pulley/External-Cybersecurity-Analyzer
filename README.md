@@ -59,6 +59,8 @@ py -m venv .venv
 .\.venv\Scripts\python.exe -m uvicorn app:app --port 8000
 ```
 
+## python -m uvicorn app:app --host 127.0.0.1 --port 8000
+
 Open [localhost:8000](http://127.0.0.1:8000/). The form shows the URL FastAPI
 received and the returned scan results. After editing the React page, run
 `npm --prefix web run build` again.
